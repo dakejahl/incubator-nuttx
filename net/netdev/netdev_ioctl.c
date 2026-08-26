@@ -1100,6 +1100,21 @@ static int netdev_ifr_ioctl(FAR struct socket *psock, int cmd,
         break;
 #endif
 
+#if defined(CONFIG_NETDEV_IOCTL) && defined(CONFIG_NETDEV_CAN_ERROR_IOCTL)
+      case SIOCGCANERRORS:  /* Get CAN error counters and state */
+        {
+          dev = netdev_ifr_dev(req);
+          if (dev && dev->d_ioctl)
+            {
+              struct can_ioctl_errors_s *can_errors =
+                &req->ifr_ifru.ifru_can_errors;
+              ret = dev->d_ioctl(dev, cmd,
+                            (unsigned long)(uintptr_t)can_errors);
+            }
+        }
+        break;
+#endif
+
 #ifdef CONFIG_NETDEV_IFINDEX
       case SIOCGIFNAME:  /* Get interface name */
         {
